@@ -1,98 +1,73 @@
+from hangman_pics import hangman
 import random
-from wordslist import words
 
 
-def hangman():
+def guess_word():
     word = random.choice(words)
-    turns = 10
-    guessmade = ''
-    valid_entry = set('abcdefghijklmnopqrstuvwxyz')
-
-    while len(word) > 0:
-        main_word = ''
-
-        for letter in word:
-            if letter in guessmade:
-                main_word = main_word+letter
-            else:
-                main_word = main_word+'_'
-
-            if main_word == word:
-                print(main_word)
-                print('You Won!!!')
-                break
-
-            print('Guess the words', main_word)
-            guess = input()
-
-            if guess in valid_entry:
-                guessmade = guessmade+guess
-            else:
-                print("Enter a valid character")
-                guess = input()
-            if guess not in word:
-                turns = turns-1
-
-                if turns == 9:
-                    print("9 turns left!")
-                    print("------------------")
-                if turns == 8:
-                    print("8 turns left!")
-                    print("-------------------")
-                    print("          O          ")
-                if turns == 7:
-                    print("7 turns left!")
-                    print("-------------------")
-                    print("          O          ")
-                    print("          |          ")
-                if turns == 6:
-                    print("6 turns left!")
-                    print("-------------------")
-                    print("          O          ")
-                    print("          |          ")
-                    print("         /           ")
-                if turns == 5:
-                    print("5 turns left!")
-                    print("-------------------")
-                    print("          O          ")
-                    print("          |          ")
-                    print("         / \          ")
-                if turns == 4:
-                    print("4 turns left!")
-                    print("-------------------")
-                    print("          O/         ")
-                    print("          |          ")
-                    print("         / \          ")
-                if turns == 3:
-                    print("3 turns left!")
-                    print("-------------------")
-                    print("         \O/         ")
-                    print("          |          ")
-                    print("         / \          ")
-                if turns == 2:
-                    print("2 turns left!")
-                    print("-------------------")
-                    print("         \O/ |       ")
-                    print("          |          ")
-                    print("         / \          ")
-                if turns == 1:
-                    print("1 turns left!")
-                    print("-------------------")
-                    print("         \O/_|       ")
-                    print("          |          ")
-                    print("         / \          ")
-                if turns == 0:
-                    print("You Lose!!!")
-                    print("You let a good man die...")
-                    print("-------------------")
-                    print("          O_|       ")
-                    print("         /|\          ")
-                    print("         / \          ")
-                    break
+    print("Guess the word")
+    return word
 
 
-name = input('Enter your name:')
-print('Welcome', name, '!')
-print('---------------------------------------------')
-print('Guess the word in less than 10 chances.')
-hangman()
+def is_present(letter):
+    if letter.lower() in word.lower():
+        return letter.lower()
+    else:
+        return False
+
+
+def fill_blank(letter):
+    global display_dash, word
+    display_dash = list(display_dash)
+    for i, l in enumerate(word):
+        if letter == l:
+            display_dash[i] = letter
+    print("".join(display_dash))
+
+
+def make_hangman():
+    global chances
+    chances += 1
+    print(hangman[chances])
+
+
+def check_letter(user_choice):
+    letter = is_present(user_choice)
+    if letter:
+        fill_blank(letter)
+    else:
+        make_hangman()
+
+
+def check_word():  # when user enters a full word
+    if user_choice.lower() == word.lower():
+        return True
+    else:
+        return False
+
+
+# initial setup
+chances = 0
+is_win = False
+words = ['apple', 'orange', 'pineapple', 'banana', 'strawberry', 'plum']
+word = guess_word()
+display_dash = ('-'*len(word))
+print(display_dash)
+print(hangman[0])
+
+# main loop
+
+while chances <= 8 and not is_win:
+    user_choice = input()
+    if len(user_choice) == 1:
+        check_letter(user_choice)
+    else:
+        is_win = check_word(user_choice)
+        break
+
+    if '-' not in display_dash:
+        is_win = True
+
+if is_win:
+    print("You Won!!!")
+else:
+    print("You Lose! :( ")
